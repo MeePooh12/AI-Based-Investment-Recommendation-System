@@ -1,0 +1,434 @@
+html, body {
+    height: 100%;
+    scroll-behavior: smooth; /* เพิ่มความนุ่มเวลา scroll */
+    font-family: sans-serif;
+}
+
+.search-page {
+  margin-top: 20px; /* เท่าความสูง header + padding นิดหน่อย */
+  padding: 1rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container{
+    margin: 10px auto;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.16) 1px 1px 2px 2px ;
+}
+
+body.dark .container{
+    background-color: #1f1f1f;
+    color: #fff;
+    border-color: #444;
+    border: 1px solid #252525;
+    box-shadow: rgba(255, 255, 255, 0.16) px 1px 2px 2px;
+}
+body.dark .input-option {
+    background-color: #2e2e2e; /* พื้นหลังเข้ม */
+    color: #fff;               /* ตัวอักษรขาว */
+    border: 1px solid #555;    /* ขอบเข้ม */
+}
+
+body.dark select {
+    background-color: #2e2e2e;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+body.dark .btn-save {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #555;
+    cursor: pointer;
+}
+
+body.dark .btn-save:hover {
+    background-color: #555;
+}
+
+.Search-form{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+label{
+    font-size: 20px;
+}
+
+.input-option{
+    flex: 1 1 200px;
+    min-width: 150px;
+    padding: 8px;
+    font-size: 18px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    flex-grow: 1;
+    margin: 10px;
+    outline: none;
+}
+
+select{
+    font-size: 15px;
+    padding: 7px;
+    margin: 10px;
+    outline: none;
+}
+
+.btn-save{
+    flex: 0 0 auto;
+    font-size: 15px;
+    padding: 7px 15px;
+    flex-shrink: 0;
+}
+
+/* กล่องหลักของรายการหุ้น */
+.stock-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+  margin-top: 15px;
+  z-index: 9999;
+}
+
+/* การ์ดแนวนอนแต่ละช่อง */
+.stock-row {
+  overflow-y: auto;
+  overflow-x: hidden; /* ปิดการเลื่อนแนวนอน (กันขยับซ้ายขวาเกิน) */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  gap: 12px;
+  background-color: #ffffff; /* ✅ พื้นหลังขาวจริง */
+  border: 2px solid #d1d5db; /* ✅ ขอบเทาอ่อนขึ้นจาก #e5e7eb */
+  border-radius: 14px;       /* ✅ มุมโค้งชัด */
+  padding: 14px 18px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06); /* ✅ เพิ่มเงาเบาๆ */
+}
+
+.stock-row:hover {
+  transform: translateY(-3px);
+  border-color: #4578c9; /* ✅ ไฮไลต์ขอบสีฟ้าเมื่อ hover */
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15); /* เงาเข้มขึ้น */
+}
+
+/* ซ้าย: โลโก้ + ชื่อหุ้น */
+.stock-left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  width: 100%;
+}
+
+.stock-logo {
+  width: 50px;
+  height: 38px;
+  margin-left: 10px;
+  background-color: transparent;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.stock-row:hover .stock-logo {
+  transform: scale(1.1);
+}
+
+.stock-symbol {
+  font-weight: 700;     /* ✅ ตัวหนามากขึ้น */
+  font-size: 1.1rem;
+  color: #111827;       /* สีเข้มชัดในธีมสว่าง */
+  letter-spacing: 0.5px; /* เพิ่มระยะห่างตัวอักษรเล็กน้อยให้ดูหรู */
+}
+
+.stock-name {
+  font-weight: 500;
+  color: gray;
+}
+
+.stock-sector {
+  font-size: 0.85rem;
+  color: gray;
+}
+
+.stock-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+}
+
+.stock-symbol,
+.stock-name,
+.stock-sector {
+  width: 100%;
+  text-align: left;
+}
+
+/* Hover เอฟเฟกต์ */
+.stock-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+}
+
+/* กรณีที่เลือกด้วย keyboard (active item) */
+.stock-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* โหมดมืด */
+.dark .stock-row {
+  background: #000000;
+  border-color: #313336;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+
+.dark .stock-row:hover {
+  border-color: #60a5fa;
+  box-shadow: 0 8px 18px rgba(96, 165, 250, 0.25);
+}
+
+
+.dark .stock-card {
+  background: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .stock-symbol{
+  color: #ffffff;  
+  font-weight: 700;
+}
+
+.dark .stock-name{
+  color: rgb(170, 170, 170);
+}
+
+.dark .stock-sector{
+  color: rgb(170, 170, 170);
+}
+
+.dark .stock-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: #60a5fa;
+  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.25);
+}
+
+.news-card {
+  display: flex;
+  flex-direction: row; /* รูปซ้าย เนื้อหาขวา */
+  align-items: center;
+  background: var(--card-bg);
+  color: var(--card-text);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 5px;
+  box-shadow: var(--card-shadow);
+  justify-content: flex-start; /* ✅ เนื้อหาชิดซ้าย */
+}
+
+body.theme-dark .news-card {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: left; /* ✅ ชิดซ้าย */
+  color: var(--title-color);
+}
+
+.daily-news-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px; /* ระยะห่างระหว่างการ์ด */
+  text-align: center;  /* กึ่งกลาง */
+  margin-top: 1rem;    /* เว้นระยะจากข่าว */
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.news-card {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.news-card img {
+  width: 300px; /* เท่ากับ w-28 */
+  height: 150px; /* เท่ากับ h-24 */
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.news-card .content {
+  flex: 1;
+  text-align: left; /* ✅ เนื้อหาชิดซ้าย */
+}
+
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.news-content {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.news-content p {
+  margin: 0;
+}
+
+.news-meta {
+  font-size: 0.75rem;
+  color: #718096; /* gray-500 */
+  margin-top: 4px;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #2563eb; /* สีน้ำเงิน */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lang-change {
+  all: unset;
+  position: absolute;
+  top: 90px;
+  right: 20px;
+  display: inline-block;
+  width: auto;
+  background: transparent;
+  color: black;
+  font-weight: bold;
+  border: 2px solid black;
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 1000;
+}
+
+.lang-change:hover {
+  background: gray;
+  color: #ffffff;
+}
+
+/* 🔹 ส่วนแสดงหุ้นที่ติดตามไว้ */
+.favorites-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 20px;
+  z-index: 1000px;
+}
+
+.favorite-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 55px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.favorite-item:hover {
+  transform: scale(1.08);
+}
+
+.favorite-logo {
+  border-radius: 50%;
+  object-fit: contain;
+  background-color: #fff;
+  border: 1.5px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 4px;
+}
+
+.favorite-item img {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.favorite-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+
+body.light .favorite-name{
+  background-color: white;
+  color: #000000;
+}
+
+body.dark .favorite-name{
+  background-color: #000000;
+  color: white;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .favorite-name {
+    color: #f0f0f0;
+  }
+  .favorite-logo {
+    border-color: #555;
+    background-color: #222;
+  }
+}

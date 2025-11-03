@@ -1,0 +1,210 @@
+/* StockDetail.css */
+.stock-header {
+  width: 100%;          /* เต็มความกว้าง */
+  padding-left: 0;      /* เอา padding ด้านซ้ายออก */
+  text-align: left;     /* ชิดซ้าย */
+  margin-left: 0;       /* เอา margin ด้านซ้ายออก */
+  margin-bottom: 1rem;  /* เว้นระยะด้านล่าง */
+  z-index: 9999;
+}
+
+/* สำหรับชื่อหุ้น */
+.stock-header h1 {
+  font-size: 2rem;      /* ขนาดตัวอักษร */
+  font-weight: bold;
+  margin: 0;            /* ล้าง margin */
+}
+
+/* สำหรับราคาล่าสุด */
+.stock-header p {
+  font-size: 1.25rem;
+  color: #16a34a;       /* สีเขียว */
+  margin: 0.25rem 0 0 0; /* เว้นระยะเล็กน้อยด้านบน */
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 8px;
+  padding: 10px 24px;
+  border: 2px solid #ccc;
+  border-radius: 24px; /* มุมโค้ง */
+  background-color: white;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* ไอคอนในปุ่ม */
+.filter-btn .icon {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.filter-btn:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Hover ทำให้ไอคอนเด่นขึ้น */
+.filter-btn:hover .icon {
+  transform: scale(1.3); /* ขยายไอคอน */
+  color: #000; /* เปลี่ยนสีไอคอนชัดขึ้น */
+}
+
+/* Active state */
+.filter-btn.active {
+  border: transparent;
+  color: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* Active ทำให้ไอคอนเด่น */
+.filter-btn.active .icon {
+  transform: scale(1.5); /* ขยายใหญ่ขึ้น */
+  color: #fff; /* สีไอคอนขาว */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* เพิ่มเงา */
+}
+
+/* สีสำหรับแต่ละปุ่ม */
+.filter-btn.active:nth-child(1) { background-color: #2563eb; } /* All - Blue */
+.filter-btn.active:nth-child(2) { background-color: #16a34a; } /* Bullish - Green */
+.filter-btn.active:nth-child(3) { background-color: #dc2626; } /* Bearish - Red */
+
+.news-card {
+  display: flex;
+  flex-direction: row; /* รูปซ้าย เนื้อหาขวา */
+  align-items: flex-start;
+  background: var(--card-bg, #fff);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.news-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.news-image-wrapper {
+  flex-shrink: 0;
+  border-right: 2px solid #797979; /* เส้นคั่นระหว่างรูปกับเนื้อหา */
+}
+
+.news-image {
+  width: 220px;
+  height: 160px;
+  object-fit: cover;
+  
+}
+
+.news-content {
+  flex: 1;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.news-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.dark .news-title {
+  color: #f9fafb;
+}
+
+.news-meta {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.news-sentiment {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.news-sentiment.positive {
+  color: #22c55e;
+}
+
+.news-sentiment.negative {
+  color: #ef4444;
+}
+
+.news-sentiment.neutral {
+  color: #9ca3af;
+}
+
+.news-link {
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 10px;
+  align-self: flex-start;
+  text-decoration: none;
+}
+
+.news-link:hover {
+  text-decoration: underline;
+}
+
+.favorite-star {
+  font-size: 1.5rem; /* ขนาดใหญ่ */
+  color: gray; /* สีดาวปกติ */
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s, text-shadow 0.2s;
+}
+
+.favorite-star:hover {
+  color: #fcd34d; /* สีเหลืองอ่อนเวลาหย hover */
+  transform: scale(1.2);
+}
+
+.favorite-star.active {
+  color: #facc15; /* สีเหลืองทองเมื่อ active */
+  transform: scale(1.3); /* ขยายเล็กน้อยเมื่อ active */
+}
+
+.back-button {
+  position: static;
+  display: flex;
+  margin-top: 60px;
+  justify-content: flex-start;
+}
+
+.back-btn {
+  position: static;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #f3f3f3;
+}
+
+
