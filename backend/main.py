@@ -53,6 +53,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"message": "AI Investment Backend is running!"}
+
 # =========================
 # Sentiment Model (FinBERT)
 # =========================
