@@ -89,7 +89,7 @@ export default function RiskPage() {
       </div>
 
       <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
-        Risk level
+        Risk Level
       </h3>
 
       <div className="risk-card">
