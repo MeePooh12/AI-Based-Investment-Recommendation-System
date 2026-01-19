@@ -50,40 +50,13 @@
   box-shadow: 0 0 0 3px rgba(14, 123, 247, 0.2);
 }
 
-.dob-select{
-  display: flex;
-  gap: 8px; /* ช่องว่างระหว่าง dropdown */
-  margin-bottom: 16px;
-}
-
-.dob-select select {
-  flex: 1; /* ให้แต่ละ select ขยายเท่ากัน */
-  padding: 10px 12px;
-  font-size: 14px;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  background-color: #fff;
-  outline: none;
-  transition: border 0.2s ease;
-}
-
-.dob-select select:hover,
-.dob-select select:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(14, 123, 247, 0.2);
-}
-
-.dob-select select option:first-child {
-  color: #999;
-}
-
 /* ปุ่มสมัคร */
 .btn-register {
   width: 100%;
   padding: 12px;
   margin-top: 14px;
   border: none;
-  background: #1e3a8a;
+  background: #46b3e5;
   color: white;
   font-size: 1rem;
   border-radius: 8px;
@@ -137,11 +110,6 @@
   color: #4338ca;
 }
 
-.dob-select{
-  margin-bottom: 3px;
-  margin-left: 15px;
-}
-
 /* ✅ Responsive (มือถือ) */
 @media (max-width: 768px) {
   .register-container {
@@ -158,25 +126,3 @@
     width: 70px;
   }
 }
-
-.password-strength {
-  margin-top: 5px;
-}
-
-.strength-bar {
-  height: 5px;
-  border-radius: 4px;
-  margin-bottom: 3px;
-  transition: width 0.3s ease, background-color 0.3s ease;
-}
-.password-strength .strength-bar {
-  margin-left: 14px;
-  height: 6px;
-  border-radius: 4px;
-}
-
-.bot-field {
-  display: none;
-  visibility: hidden;
-}
-

@@ -31,7 +31,7 @@ export default function AccountPage () {
   };
 
   useEffect(() => {
-    const tickers = ["NVDA","MSFT","AMZN","UNH","AMD","GOOGL","MU","TSM","NVO","META","V","BRK-A"];
+    const tickers = ["NVDA","MSFT","AMZN","UNH","AMD","GOOGL","MU","TSM","NVO","MRK","V"];
     const fetchRiskData = async () => {
       setLoading(true);
       try {

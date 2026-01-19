@@ -29,11 +29,12 @@ export default function Header() {
   const menuRef = useRef(null);
   const langDropdownRef = useRef(null);
   
+  
   const t = {
     en: { 
       sitetitle: "AI-Based Investment", greet: "Welcome", mailbox: "Mailbox", 
       mailalert: "Stock news alert", notification: "Not new notifications", theme: "Select theme", 
-      themelight: "Light theme", themedark: "Dark theme", fear: "Fear and Greed", menu: "Menu", risk: "Risk",
+      themelight: "Ligth theme", themedark: "Dark theme", fear: "Fear and Greed", menu: "Menu", risk: "Risk",
       favorite : "Favorite", logout: "Logout", alert:"Do you really want to logout ?", yes:"Yes", no:"No" },
     th: { 
       sitetitle: "ระบบแนะนำการลงทุนด้วย AI", greet: "ยินดีต้อนรับ", mailbox: "กล่องข้อความ",  
@@ -184,196 +185,191 @@ export default function Header() {
       return [...remaining, ...added];
     });
   }, [alerts]);
-  
-  
+
   return (
     <div className={`top-bar ${theme}`}>
-      <div className="top-bar-inner">
-        <div className="logo-container">
-          <Link to="/search">
-            <img src="/Ail.svg" alt="Logo" className="logo" />
-          </Link>
-          <span className="site-title">AI-Based Investment</span>
-        </div>
-        
-        <div className="header-text">
-          <span className="welcome-text">
-            Welcome, <span className="username">{username}</span>
-          </span>
-          <div className="header-icons">
-            <div className="tooltip mailbox-wrapper" ref={mailRef}>
-              <div className="relative">
-                <IoMailOutline
-                  size={25}
-                  className="mail-icon"
-                  onClick={toggleMail}
-                />
-                {/* จุดแดงแจ้งเตือน */}
-                {alerts.length > 0 && (
-                  <span className="absolute top-0 right-0 inline-block w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-                )}
-              </div>
-              <span className="tooltip-text">{t[language].mailbox}</span>
+      <div className="logo-container">
+        <Link to="/search">
+          <img src="/Ail.svg" alt="Logo" className="logo" />
+        </Link>
+        <span className="site-title">{t[language].sitetitle}</span>
+      </div>
 
-              {mailOpen && (
-                <div className="mail-dropdown">
-                  <p className="mail-header">📩 แจ้งเตือนข่าวหุ้น</p>
-                  {visibleStocks.length === 0 ? (
-                    <div className="mail-item">- {t[language].notification}</div>
-                  ) : (
-                    visibleStocks.map(symbol => {
-                    // กรอง alert ที่ risk = medium ออก
-                    const symbolAlerts = alerts
-                      .filter(a => a.symbol === symbol && a.risk !== "medium");
+      <div className="header-text">
+        <span>{t[language].greet} , {username}</span>
+        <div className="header-icons">
+          <div className=" tooltip mailbox-wrapper " ref={mailRef}>
+            <IoMailOutline
+              size={25}
+              className="mail-icon"
+              onClick={toggleMail}
+            />
+            <span className="tooltip-text">{t[language].mailbox}</span>
+            {mailOpen && (
+              <div className="mail-dropdown">
+                <p className="mail-header">📩 {t[language].mailalert}</p>
 
-                    // ถ้าไม่มี alert ที่เป็น high/low ให้ข้าม
-                    if (symbolAlerts.length === 0) return null;
-
+                {visibleStocks.length === 0 ? (
+                  <div className="mail-item">- {t[language].notification}</div>
+                ) : (
+                   visibleStocks.map(symbol=>{
+                    const symbolAlerts = alerts.filter(a=>a.symbol===symbol);
+                    if(symbolAlerts.length===0) 
+                      return 
+                    <div key={symbol} className="stock-news-card fade-out"></div>;
                     return (
                       <div key={symbol} className="stock-news-card">
                         <div className="stock-news-header">{symbol}</div>
                         {symbolAlerts.map((alert, i) => (
-                          <div
-                            key={i}
-                            className={`stock-news-item ${alert.risk}`}
-                            style={{
-                              color: alert.risk === "high" ? "red" : "green",
-                            }}
-                          >
-                            <a
-                              href={alert.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="underline"
-                            >
+                          <div key={i} className={`stock-news-item ${alert.risk}`} style={{color: alert.risk === "high" ? "red" : alert.risk === "medium" ? "gray" : "green"}}>
+                            <a href={alert.link} target="_blank" rel="noopener noreferrer" className="underline">
                               {alert.message}
                             </a>
                           </div>
                         ))}
-                      </div>
-                    );
+                    </div>
+                    )
                   })
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
+          </div>
 
-            <div className="tooltip theme-dropdown-wrapper" ref={dropdownRef}>
-              <p className="theme-toggle-btn" onClick={toggleDropdown}>
-                <BsMoonStars
-                  size={23}
-                  color={theme === "dark" ? "white" : "black"}
-                />
-              </p>
-              <span className="tooltip-text">{t[language].theme}</span>
-
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <div
-                    className={`dropdown-item ${
-                      theme === "light" ? "active" : ""
-                    }`}
-                    onClick={() => handleThemeChange("light")}
-                  >
-                  {t[language].themelight}
-                  </div>
-                  <div
-                    className={`dropdown-item ${
-                      theme === "dark" ? "active" : ""
-                    }`}
-                    onClick={() => handleThemeChange("dark")}
-                  >
-                    {t[language].themedark}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="tooltip fear-and-greed ">
-              <a
-                href="https://edition.cnn.com/markets/fear-and-greed"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <PiSpeedometer
-                  size={30}
-                  color={theme === "dark" ? "white" : "black"} // ✅ ตั้งสีตามธีม
-                  style={{ cursor: "pointer" }}
-                />
-                <span className="tooltip-text">{t[language].fear}</span>
-              </a>
-            </div>
-
-            <div className=" tooltip hamburger-menu" ref={menuRef}>
-              <GiHamburgerMenu
-                size={25}
-                onClick={toggleMenu}
-                className="hamburger-icon"
+          <div className="tooltip theme-dropdown-wrapper" ref={dropdownRef}>
+            <span className="theme-toggle-btn" onClick={toggleDropdown}>
+              <BsMoonStars
+                size={23}
+                color={theme === "dark" ? "white" : "black"}
               />
-              <span className="tooltip-text">{t[language].menu}</span>
+            </span>
+            <span className="tooltip-text">{t[language].theme}</span>
 
-              {menuOpen && (
-                <div 
-                  className="hamburger-dropdown"
-                  onClick={(e) => e.stopPropagation()}
+            {dropdownOpen && (
+              <div className="dropdown-menu">
+                <div
+                  className={`dropdown-item ${
+                    theme === "light" ? "active" : ""
+                  }`}
+                  onClick={() => handleThemeChange("light")}
                 >
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      navigate("/recommendation");
-                    }}
-                  >
-                    <GiDiceTarget className="dropdown-icon"/>
-                    <span className="dropdown-text">Investment</span>
-                  </div>
-
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      navigate("/risk");
-                    }}
-                  >
-                    <BsFillPersonFill className="dropdown-icon"/>
-                    <span className="dropdown-text">{t[language].risk}</span>
-                  </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      navigate("/favorite");
-                    }}
-                  >
-                    <FaStar className="dropdown-icon"/>
-                    <span className="dropdown-text">{t[language].favorite}</span>
-                  </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => setShowLogoutModal(true)}
-                  >
-                    <BsDoorOpenFill className="dropdown-icon"/>
-                    <span className="dropdown-text">{t[language].logout}</span>
-                  </div>
+                 {t[language].themelight}
                 </div>
-              )}
+                <div
+                  className={`dropdown-item ${
+                    theme === "dark" ? "active" : ""
+                  }`}
+                  onClick={() => handleThemeChange("dark")}
+                >
+                  {t[language].themedark}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* <div className=" tooltip language-toggle-wrapper" ref={langDropdownRef}>
+            <span className="lang-toggle-btn" onClick={() => setLangDropdownOpen(prev => !prev)}>
+              <GrLanguage size={25} color={theme === "dark" ? "white" : "black"} style={{ cursor: "pointer" }} />
+            </span>
+            <span className="tooltip-text">Language</span>
+
+            {langDropdownOpen && (
+              <div className="lang-dropdown-menu">
+                <div className={`lang-dropdown-item ${language === "en" ? "active" : ""}`} 
+                    onClick={() => { toggleLanguage("en"); setLangDropdownOpen(false); }}>
+                  English
+                </div>
+                <div className={`lang-dropdown-item ${language === "th" ? "active" : ""}`} 
+                    onClick={() => { toggleLanguage("th"); setLangDropdownOpen(false); }}>
+                  ไทย
+                </div>
+              </div>
+            )}
+          </div> */}
+
+          <div className="tooltip fear-and-greed ">
+            <a
+              href="https://edition.cnn.com/markets/fear-and-greed"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <PiSpeedometer
+                size={30}
+                color={theme === "dark" ? "white" : "black"} // ✅ ตั้งสีตามธีม
+                style={{ cursor: "pointer" }}
+              />
+              <span className="tooltip-text">{t[language].fear}</span>
+            </a>
+          </div>
+
+          <div className=" tooltip hamburger-menu" ref={menuRef}>
+            <GiHamburgerMenu
+              size={25}
+              onClick={toggleMenu}
+              className="hamburger-icon"
+            />
+            <span className="tooltip-text">{t[language].menu}</span>
+
+            {menuOpen && (
+              <div 
+                className="hamburger-dropdown"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  className="dropdown-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/recommendation");
+                  }}
+                >
+                  <GiDiceTarget className="dropdown-icon"/>
+                  <span className="dropdown-text">Investment</span>
+                </div>
+
+                <div
+                  className="dropdown-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/risk");
+                  }}
+                >
+                  <BsFillPersonFill className="dropdown-icon"/>
+                  <span className="dropdown-text">{t[language].risk}</span>
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/favorite");
+                  }}
+                >
+                  <FaStar className="dropdown-icon"/>
+                  <span className="dropdown-text">{t[language].favorite}</span>
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => setShowLogoutModal(true)}
+                >
+                  <BsDoorOpenFill className="dropdown-icon"/>
+                  <span className="dropdown-text">{t[language].logout}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+
+      {showLogoutModal && (
+        <div className={'modal-overlay ${isClosing ? "fade-in"}'}>
+          <div className={'modal ${isClosing ? "slide-up"}'}>
+            <p>{t[language].alert}</p>
+            <div className="modal-buttons">
+              <button onClick={handleLogout}>{t[language].yes}</button>
+              <button onClick={handleCloseModal}>{t[language].no}</button>
             </div>
           </div>
         </div>
-        
-
-        {showLogoutModal && (
-          <div className={'modal-overlay ${isClosing ? "fade-in"}'}>
-            <div className={'modal ${isClosing ? "slide-up"}'}>
-              <p>{t[language].alert}</p>
-              <div className="modal-buttons">
-                <button onClick={handleLogout}>{t[language].yes}</button>
-                <button onClick={handleCloseModal}>{t[language].no}</button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

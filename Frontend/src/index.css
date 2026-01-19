@@ -132,9 +132,3 @@
 .weekly-btn:hover {
   background: #1d4ed8;
 }
-
-/* RegisterPage.css หรือ global CSS */
-.grecaptcha-badge {
-    visibility: hidden;
-    display: none !important;
-}

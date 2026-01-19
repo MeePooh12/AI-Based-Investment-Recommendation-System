@@ -4,19 +4,12 @@ html, body {
     font-family: sans-serif;
 }
 
-img {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-}
-
 .search-page {
   margin-top: 20px; /* เท่าความสูง header + padding นิดหน่อย */
   padding: 1rem;
-  max-width: 2000px;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
-  user-select: none;
 }
 
 .container{
@@ -113,8 +106,8 @@ select{
   justify-content: flex-start;
   cursor: pointer;
   gap: 12px;
-  background-color: #e0e0e0; /* ✅ พื้นหลังขาวจริง */
-  border: 2px solid #bfc0c2; /* ✅ ขอบเทาอ่อนขึ้นจาก #e5e7eb */
+  background-color: #ffffff; /* ✅ พื้นหลังขาวจริง */
+  border: 2px solid #d1d5db; /* ✅ ขอบเทาอ่อนขึ้นจาก #e5e7eb */
   border-radius: 14px;       /* ✅ มุมโค้งชัด */
   padding: 14px 18px;
   transition: all 0.25s ease;
@@ -245,7 +238,7 @@ select{
   text-decoration: none;
   padding: 12px;
   border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.16) 5px 4px 2px 2px ;
+  box-shadow: var(--card-shadow);
   justify-content: flex-start; /* ✅ เนื้อหาชิดซ้าย */
 }
 
@@ -286,7 +279,7 @@ body.theme-dark .news-card {
 
 .news-card img {
   width: 300px; /* เท่ากับ w-28 */
-  height: 200px; /* เท่ากับ h-24 */
+  height: 150px; /* เท่ากับ h-24 */
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -374,9 +367,10 @@ body.theme-dark .news-card {
 .favorites-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   margin-bottom: 1.5rem;
+  gap: 20px;
   z-index: 1000px;
 }
 
@@ -404,15 +398,8 @@ body.theme-dark .news-card {
 }
 
 .favorite-item img {
-  width: 40px !important;
-  height: 40px !important;
-  background-color: #e0e0e0;
-  border-radius: 20%;
-  object-fit: cover; /* ป้องกันรูปยืด */
-}
-
-.dark .favorite-item img {
-  background-color: #222;
+  width: 32px !important;
+  height: 32px !important;
 }
 
 .favorite-name {
@@ -443,56 +430,5 @@ body.dark .favorite-name{
   .favorite-logo {
     border-color: #555;
     background-color: #222;
-  }
-}
-
-.favorite-icon {
-  transform: translateY(-5px); /* เลื่อนขึ้น 8px */
-  cursor: pointer;
-  user-select: none;
-}
-
-.modal-stock-row {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  overflow-x: auto;
-  padding: 0.5rem 0;
-}
-
-/* ให้ทุกไอคอนเลื่อนจากซ้ายไปขวา */
-.modal-stock-item {
-  flex-shrink: 0;
-  cursor: pointer;
-}
-
-.modal-stock-item img {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50px;
-  border: 1px solid #cbd5e1;
-  background-color: #e0e0e0;
-  transition: transform 0.2s;
-  margin-left: 1px;
-}
-
-.dark .modal-stock-item img {
-  border: 1px solid #a1a1a1;
-  background-color: #222;
-}
-
-.modal-stock-item img:hover {
-  transform: scale(1.1);
-}
-
-/* keyframes slide-in จากซ้ายไปขวา */
-@keyframes slideInRight {
-  from {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
   }
 }

@@ -34,15 +34,11 @@ export default function StockDetail() {
   const [isFavorite, setIsFavorite] = useState(false);
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const [stockError, setStockError] = useState("");
 
   // ---------- states (ใหม่: Recommendation) ----------
   const [reco, setReco] = useState(null);
   const [recoLoading, setRecoLoading] = useState(false);
   const [recoError, setRecoError] = useState("");
-  const [chartLoading, setChartLoading] = useState(true);
-  const [chartError, setChartError] = useState("");
-  const [showChart, setShowChart] = useState(false);
 
   // Utility mapping สีคำแนะนำ
   const recoColor = (r) => {
@@ -61,41 +57,12 @@ export default function StockDetail() {
 
   // ดึงข้อมูลหุ้น
   useEffect(() => {
-    setStock(null);
-    setStockError("");
-    setChartLoading(true);
-    setShowChart(false);
-    setChartError("");
-
-    const MIN_LOAD_TIME = 1200; // หน่วงให้ Animation เห็นแน่นอน
-    const start = Date.now();
-
     fetch(`http://localhost:8000/stock/${symbol}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("ไม่สามารถดึงข้อมูลหุ้นได้");
-        return res.json();
-      })
-      .then((data) => {
-        setStock(data);
-
-        const elapsed = Date.now() - start;
-        const wait = Math.max(0, MIN_LOAD_TIME - elapsed);
-
-        // รอให้ครบเวลาขั้นต่ำ ค่อยแสดงกราฟ
-        setTimeout(() => {
-          setShowChart(true);
-          setChartLoading(false);
-        }, wait);
-      })
-      .catch((err) => {
-        console.error(err);
-        setStockError("เกิดข้อผิดพลาดในการดึงข้อมูลหุ้น หรือเชื่อมต่อเซิร์ฟเวอร์ไม่ได้");
-        setChartError("โหลดข้อมูลล้มเหลว กรุณาตรวจสอบการเชื่อมต่อ");
-        setChartLoading(false);
-      });
-
+      .then((res) => res.json())
+      .then((data) => setStock(data))
+      .catch((err) => console.error("Error fetching stock:", err));
   }, [symbol]);
-  
+
   // ดึงคำแนะนำลงทุน (Target Price + Recommendation)
   useEffect(() => {
     const run = async () => {
@@ -215,7 +182,7 @@ export default function StockDetail() {
             {stock.name} ({symbol})
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl text-green-500 font-semibold mt-1">
-            ราคาล่าสุด: ${stock.price?.toLocaleString() ?? "-"}
+            ราคาล่าสุด: {stock.price}
           </p>
         </div>
       )}
@@ -228,75 +195,108 @@ export default function StockDetail() {
       </button>
 
       {/* กราฟหุ้น */}
-      <div className="bg-white dark:bg-gray-700 p-4 rounded-xl shadow mb-6 min-h-[300px] flex items-center justify-center">
-        {/* กำลังโหลด */}
-        {chartLoading && !chartError && (
-          <div className="flex flex-col items-center gap-3">
-            <div className="skeleton-chart"></div>
-            <p className="text-gray-500 dark:text-gray-300">กำลังโหลดกราฟ...</p>
-          </div>
-        )}
-
-        {/* แจ้ง Error */}
-        {!chartLoading && chartError && (
-          <p className="text-red-400 text-center">{chartError}</p>
-        )}
-
-        {/* แสดงกราฟเมื่อโหลดสำเร็จ */}
-        {!chartLoading && !chartError && showChart && stock?.history?.length > 0 && (
-          <div className="chart-fade-in w-full">
-            <Line data={chartData} options={options} />
-          </div>
-        )}
+      <div className="bg-white dark:bg-gray-700 p-4 rounded-xl shadow mb-6">
+        <Line data={chartData} options={options} />
       </div>
 
       {/* 🔥 การ์ด Target Price + Recommendation */}
-      <div className="ai-recommendation-card">
-        <div className="ai-recommendation-header">
-          <h3>Target Price & Recommendation (AI)</h3>
-          {recoLoading && <span className="status loading">กำลังคำนวณคำแนะนำ…</span>}
-          {recoError && <span className="status error">{recoError}</span>}
+      <div
+        className="rounded-xl shadow mb-6"
+        style={{
+          background: "#fff",
+          border: "1px solid #eee",
+          padding: 16,
+        }}
+      >
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <h3 style={{ margin: 0, fontWeight: 700, fontSize: 18 }}>
+            Target Price & Recommendation (AI)
+          </h3>
+          {recoLoading && (
+            <span style={{ color: "#6b7280" }}>กำลังคำนวณคำแนะนำ…</span>
+          )}
+          {recoError && (
+            <span style={{ color: "#b91c1c" }}>❌ {recoError}</span>
+          )}
         </div>
 
         {reco && !recoError && (
-          <div className="ai-recommendation-grid">
-            <div className="info-card">
-              <div className="label">คำแนะนำ</div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              gap: 12,
+              marginTop: 12,
+            }}
+          >
+            <div
+              style={{
+                border: "1px solid #eee",
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
+              <div style={{ color: "#6b7280" }}>คำแนะนำ</div>
               <div
-                className="value reco-text"
-                style={{ color: recoColor(reco.recommendation) }}
+                style={{
+                  fontWeight: 800,
+                  fontSize: 20,
+                  color: recoColor(reco.recommendation),
+                }}
               >
                 {reco.recommendation || "-"}
               </div>
-              <div className="subtext">
-                ความเชื่อมั่น: <b>{Math.round((reco.confidence || 0) * 100)}%</b>
+              <div style={{ color: "#6b7280", marginTop: 6 }}>
+                ความเชื่อมั่น:{" "}
+                <b>{Math.round((reco.confidence || 0) * 100)}%</b>
               </div>
             </div>
 
-            <div className="info-card">
-              <div className="label">ราคาเป้าหมายเฉลี่ย</div>
-              <div className="value">
-                ${reco.target_price_mean?.toLocaleString() ?? "-"}
+            <div
+              style={{
+                border: "1px solid #eee",
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
+              <div style={{ color: "#6b7280" }}>ราคาเป้าหมายเฉลี่ย</div>
+              <div style={{ fontWeight: 800, fontSize: 20 }}>
+                ${reco.target_price_mean ?? "-"}
               </div>
-              <div className="subtext">
+              <div style={{ color: "#6b7280", marginTop: 6 }}>
                 Upside/Downside: <b>{pctText}</b>
               </div>
             </div>
 
-            <div className="info-card">
-              <div className="label">สูงสุด / ต่ำสุด</div>
-              <div className="value">
-                ${reco.target_price_high?.toLocaleString() ?? "-"} / ${reco.target_price_low?.toLocaleString() ?? "-"}
+            <div
+              style={{
+                border: "1px solid #eee",
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
+              <div style={{ color: "#6b7280" }}>สูงสุด / ต่ำสุด</div>
+              <div style={{ fontWeight: 800, fontSize: 20 }}>
+                ${reco.target_price_high ?? "-"} / $
+                {reco.target_price_low ?? "-"}
               </div>
-              <div className="subtext">
-                ราคาปัจจุบัน: <b>${reco.current_price?.toLocaleString() ?? "-"}</b>
+              <div style={{ color: "#6b7280", marginTop: 6 }}>
+                ราคาปัจจุบัน: <b>${reco.current_price ?? "-"}</b>
               </div>
             </div>
 
-            <div className="info-card">
-              <div className="label">ข่าวที่ใช้คำนวณ</div>
-              <div className="value">{reco.news_count ?? 0} ชิ้น</div>
-              <div className="subtext">
+            <div
+              style={{
+                border: "1px solid #eee",
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
+              <div style={{ color: "#6b7280" }}>ข่าวที่ใช้คำนวณ</div>
+              <div style={{ fontWeight: 800, fontSize: 20 }}>
+                {reco.news_count ?? 0} ชิ้น
+              </div>
+              <div style={{ color: "#6b7280", marginTop: 6 }}>
                 ช่วงเวลา: {reco.window_days ?? 7} วัน
               </div>
             </div>
@@ -323,48 +323,53 @@ export default function StockDetail() {
       </div>
 
       {/* แสดงข่าว */}
-      <div className="news-grid ">
-          {filteredNews?.length > 0 ? (
-            filteredNews.map((n, i) => (
-              <a
-                key={i}
-                href={n.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="news-card group"
-                >
-                  <div className="news-image-wrapper">
-                    <img
-                      src={n.image}
-                      className="news-image"
-                    />
-                  </div>
+      <div className="news-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredNews?.length > 0 ? (
+          filteredNews.map((n, i) => (
+            <a
+              key={i}
+              href={n.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="news-card group flex bg-white dark:bg-gray-800 items-start border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+            >
+              {n.image && (
+                <div className="news-image-wrapper">
+                  <img
+                    src={n.image}
+                    alt={n.title}
+                    className="news-image"
+                  />
+                </div>
+              )}
 
               <div className="news-content">
-                  <div>
-                    <p className="news-title">{n.title}</p>
-                    <p className="news-meta">{n.date} | {n.provider}</p>
-                    <p
-                      className={`news-sentiment ${
+                <div>
+                  <p className="news-title">{n.title}</p>
+                  <p className="news-meta">
+                    {n.date} | {n.provider}
+                  </p>
+                  <p
+                    className={`news-sentiment ${
                       n.sentiment?.toLowerCase() === "positive"
                         ? "positive"
                         : n.sentiment?.toLowerCase() === "negative"
                         ? "negative"
                         : "neutral"
-                      }`}
-                    >
-                        Sentiment: {n.sentiment}
-                    </p>
-                  </div>
+                    }`}
+                  >
+                    Sentiment: {n.sentiment}
+                  </p>
+                </div>
               </div>
-              </a>
-            ))
-          ) : (
-            <p className="col-span-full text-center text-gray-500 mt-4">
-              ไม่มีข่าวสารในหมวดหมู่นี้
-            </p>
-          )}
-        </div>
+            </a>
+          ))
+        ) : (
+          <p className="col-span-full text-center text-gray-500 mt-4">
+            ไม่มีข่าวในหมวดนี้
+          </p>
+        )}
+      </div>
     </div>
   );
 }

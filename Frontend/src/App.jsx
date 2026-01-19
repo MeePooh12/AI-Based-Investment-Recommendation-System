@@ -5,8 +5,6 @@ import { LanguageProvider } from "./Components/LanguageContext";
 import PrivateLayout from "./Components/PrivateLayout";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
-import ForgotPassword from "./Pages/ForgotPassword";
-import ResetPassword from "./Pages/ResetPassword";
 import RiskPage from "./Pages/RiskPage";
 import FavoritePage from "./Pages/FavoritePage";
 import SearchPage from "./Pages/SearchPage";
@@ -20,8 +18,6 @@ import RecommendationPage from "./Pages/RecommendationPage";
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Private Routes (Header + Outlet) */}
         <Route element={<PrivateLayout />}>

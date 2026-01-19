@@ -14,26 +14,16 @@ body.light {
   justify-content: space-between;
   margin: auto;
   padding: 0px 10px;
-  border-bottom: 2px solid #d4d4d4;
-  background: rgb(199, 230, 252);
+  border-bottom: 2px solid #d7d7d7; /* เส้นอยู่ด้านล่างของ top-bar */
+  background-color: #fff;
   z-index: 9999;
-}
-
-.top-bar-inner {
-  max-width: 1200px;     /* 🔥 ปรับตรงนี้ได้ 1100 / 1200 / 1280 */
-  margin: 0 auto;       /* จัดกลาง */
-  padding: 0 24px;      /* เว้นซ้าย-ขวาเล็กน้อย */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .header-text {
   display: flex;
   align-items: center;
-  margin-left: 40px;
   justify-content: flex-end;
-  gap: 25px; /* ระยะห่างระหว่าง Welcome, Moon และ Hamburger */
+  gap: 10px; /* ระยะห่างระหว่าง Welcome, Moon และ Hamburger */
 }
 
 /* Theme Dark */
@@ -42,15 +32,12 @@ body.dark {
   color: #fff;
 }
 
-body.dark .top-bar {
-  background-color: #2e2e2e; /* สีพื้นหลังเต็มแถบ */
-  border-bottom: 2px solid #555; /* เส้นขอบเข้ม */
-  color: #fff; /* ตัวอักษร */
+.top-bar.dark {
+  background-color: #2e2e2e;
 }
 
 .logo-container {
   display: flex;
-  min-width: auto;
   top: 10px;
   left: 5px;
   z-index: 1000;
@@ -60,41 +47,20 @@ body.dark .top-bar {
 .site-title{
   font-size: x-large;
   font-weight: bold;
-  user-select: none;
+  margin-left: -40px;
 }
 
 .logo {
   height: 60px;
-  margin-right: auto;
+  margin-right: 20px;
   pointer-events: none;
 }
 
-.username {
-  font-weight: bold;
-}
-
-body.light .welcome-text {
-  background-color: #1573f8;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.95rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  pointer-events: none;
-  user-select: none;
-}
-
-body.dark .welcome-text {
-  background-color: #000000;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.95rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  pointer-events: none;
-  user-select: none;
+.header-text {
+  top: 10px;
+  right: 5px;
+  z-index: 1000;
+  margin: 5px;
 }
 
 body.light .header-text button {
@@ -129,6 +95,12 @@ body.dark {
   color: #fff; /* ตัวอักษรทั่วไป */
 }
 
+body.dark .top-bar {
+  background-color: #2e2e2e;
+  color: #fff; /* ตัวอักษรใน top-bar */
+  border-bottom: 2px solid #555;
+}
+
 body.dark .header-text button {
   background-color: #444;
   color: #fff;
@@ -152,16 +124,6 @@ body.dark .bottom-logout{
 .mailbox-wrapper {
   position: relative;
   display: inline-block;
-}
-
-.mailbox-wrapper .relative {
-  position: relative;
-}
-
-.mailbox-wrapper .absolute {
-  /* badge ตำแหน่งมุมบนขวา */
-  top: -2px;
-  right: -2px;
 }
 
 .mail-icon-wrapper {
@@ -194,27 +156,16 @@ body.dark .bottom-logout{
 /* กล่อง dropdown ข้อความ */
 .mail-dropdown {
   position: absolute;
-  overflow-y: auto;
-  max-height: 300px;
   top: 30px;
   right: 0;
+  color: #000;
+  background-color: #ffffff;
+  border: 2px solid #4fa3ff;
   border-radius: 10px;
   padding: 10px;
   width: 250px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   z-index: 50;
-}
-
-body.light .mail-dropdown {
-  color: #000;
-  background-color: #ffffff;
-  border: 2px solid #4fa3ff;
-}
-
-body.dark .mail-dropdown {
-  color: #ffffff;
-  background-color: #1a1a1a;
-  border: 2px solid #ffffff;
 }
 
 .mail-header {
@@ -223,10 +174,6 @@ body.dark .mail-dropdown {
   margin-top: 5px;
   border-bottom: 1px solid #4fa3ff;
   padding-bottom: 5px;
-}
-
-body.dark .mail-header {
-  border-bottom: 1px solid #ffffff;
 }
 
 .mail-item {
@@ -240,22 +187,21 @@ body.dark .mail-header {
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 10px;
-  transition: opacity 0.5s ease, max-height 0.5s ease;
-}
-
-body.light .stock-news-card {
   background-color: #f9f9f9;
+  transition: opacity 0.5s ease, max-height 0.5s ease;
+  overflow: hidden;
 }
 
 .stock-news-card .stock-news-header {
   font-weight: bold;
   margin-bottom: 6px;
+  color: #333;
 }
 
 .stock-news-item {
-  margin-bottom: 5px;
-  font-size: 17px;
-  margin-left: 1px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  margin-left: 8px;
 }
 
 .stock-news-item a {
@@ -275,6 +221,7 @@ body.light .stock-news-card {
 
 /* Underline link */
 .stock-news-item a.underline {
+  text-decoration: underline;
   color: inherit;
 }
 
@@ -334,7 +281,7 @@ body.light .stock-news-card {
 
 .dropdown-menu{
   position: absolute;
-  top: 80%;
+  top: 120%;
   right: 0;
   background-color: #fff;
   border: 1px solid #cfcfcf;
@@ -402,6 +349,11 @@ body.dark .lang-dropdown-item:hover {
 
 .fear-and-greed:hover{
   transform: scale(1.2);
+}
+
+body.light .top-bar {
+  background-color: #ffffff;
+  color: #000; /* ตัวอักษรใน top-bar */
 }
 
 .hamburger-menu .hamburger-dropdown {

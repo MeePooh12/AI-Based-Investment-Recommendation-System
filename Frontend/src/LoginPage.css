@@ -18,6 +18,7 @@ html, body {
   justify-content: center;
   align-items: flex-start;
   padding-top: 200px;
+  transform: translateY(-5%);
 }
 
 .logo-circle {
@@ -134,7 +135,8 @@ html, body {
 }
 
 .btn-login:hover {
-  background-color: #026dc4;
+  background-color: #374eb2;
+  transform: scale(1.05);
 }
 
 .register-link {
@@ -147,6 +149,7 @@ html, body {
 
 .register-link:hover {
   background-color: #dddddd;
+  transform: scale(1.05);
 }
 
 .password-wrapper input {
@@ -161,13 +164,6 @@ html, body {
   cursor: pointer;
   font-size: 18px;
   color: #1e3a8a;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.875rem;
-  margin-top: 4px;
-  align-items: center;
 }
 
 .loading-overlay {

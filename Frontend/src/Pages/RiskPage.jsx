@@ -88,13 +88,13 @@ export default function RiskPage() {
         <button onClick={handleBack} className="back-btn">Back</button>
       </div>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
-        ระดับความเสี่ยง
-      </h2>
+      <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+        Risk Level
+      </h3>
 
       <div className="risk-card">
         <p className="text-xl font-semibold mb-4 text-gray-800 font-inter">
-          เลือกความเสี่ยง:{" "}
+          Selected Risk:{" "}
           <span className="font-bold text-blue-600">
             {selectedRisk ? selectedRisk.toUpperCase() : "ยังไม่ได้เลือก"}
           </span>

@@ -17,70 +17,86 @@ export default function Favorite() {
     AMD:  "https://logo.clearbit.com/amd.com",
     GOOGL:"https://logo.clearbit.com/google.com",
     MU:   "https://logo.clearbit.com/micron.com",
-    TSM:  "https://logo.clearbit.com/taiwansemiconductor.com",
+    TSM:  "https://logo.clearbit.com/taiwansemiconductor.com.com",
     NVO:  "https://logo.clearbit.com/novonordisk.com",
-    META: "https://logo.clearbit.com/meta.com",
-    BRK: "https://logo.clearbit.com/berkshirehathaway.com",
+    MRK:  "https://logo.clearbit.com/merck.com",
+    V:    "https://logo.clearbit.com/visa.com",
   };
 
   const getCompanyLogo = (symbol) => logoMap[symbol] || null;
 
-  useEffect(() => {
-  const stored = JSON.parse(localStorage.getItem("favorites")) || [];
-  setFavorites(stored);
-
-  if (!stored.length) {
-    setLoading(false);
-    return;
-  }
-
-  const symbolList = stored.map(s => s.trim().toUpperCase()).filter(Boolean);
-
-  const fetchStocks = async () => {
-    const stockPromises = symbolList.map(symbol =>
-      fetch(`http://localhost:8000/stock/${symbol}`)
-        .then(res => res.json())
-        .then(stockData => ({
-          symbol: stockData.symbol || stockData.ticker || symbol,
-          name: stockData.name,
-          price: stockData.price,
-          logo: getCompanyLogo(symbol),
-          news: [],
-          averageRisk: 0,
-        }))
-        .catch(err => {
-          console.error("Error fetching stock:", symbol, err);
-          return null;
-        })
-    );
-
-    const stockArray = (await Promise.all(stockPromises)).filter(Boolean);
-    setStocks(stockArray); // render หุ้นทันที
-
-    // fetch news ทีหลัง
-    fetch(`http://localhost:8000/news?symbols=${symbolList.join(",")}`)
-      .then(res => res.json())
-      .then(newsData => {
-        setStocks(prevStocks =>
-          prevStocks.map(stock => {
-            const newsObj = newsData.find(n => n.symbol === stock.symbol) || { news: [] };
-            const averageRisk = newsObj.news.length > 0 
-              ? newsObj.news.reduce((sum, item) => sum + (item.sentiment === "NEGATIVE" ? 1 : item.sentiment === "NEUTRAL" ? 0.5 : 0), 0) / newsObj.news.length
-              : 0;
-            return {
-              ...stock,
-              news: newsObj.news,
-              averageRisk,
-            };
-          })
-        );
-      })
-      .catch(err => console.error("Error fetching news:", err))
-      .finally(() => setLoading(false));
+  const fetchNews = async (symbolList) => {
+    try {
+      if (symbolList.length === 0) return [];
+      const query = `?symbols=${symbolList.join(",")}`;
+      const res = await fetch(`http://localhost:8000/news${query}`);
+      if (!res.ok) throw new Error("Failed to fetch news");
+      const data = await res.json();
+      return data; // [{symbol, news: [...]}, ...]
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      return [];
+    }
   };
 
-  fetchStocks();
-}, []);
+  useEffect(() => {
+    // ดึงข้อมูลหุ้นที่ติดดาวไว้จาก localStorage
+    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
+    setFavorites(stored);
+
+    if (stored.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    const symbolList = stored.map((s) => s.trim().toUpperCase()).filter(Boolean);
+
+     Promise.all(
+      symbolList.map(async (symbol) => {
+        try {
+          const stockRes = await fetch(`http://localhost:8000/stock/${symbol}`);
+          const stockData = await stockRes.json();
+          return {
+            symbol: stockData.symbol || stockData.ticker || symbol, // fallback เป็นตัวที่ส่งเข้าไป
+            name: stockData.name,
+            price: stockData.price,
+            logo: getCompanyLogo(symbol),
+          };
+        } catch (err) {
+          console.error("Error fetching stock:", symbol, err);
+          return null;
+        }
+      })
+    ).then(async (stockArray) => {
+      const validStocks = stockArray.filter(Boolean);
+
+      // fetch news พร้อมกัน
+      const newsData = await fetchNews(symbolList);
+
+      // ผูกข่าวกับหุ้น
+      const finalStocks = validStocks.map((stock) => {
+        const newsObj = newsData.find((n) => n.symbol === stock.symbol);
+        let averageRisk = 0;
+        if (newsObj && newsObj.news.length > 0) {
+          let scoreSum = 0;
+          newsObj.news.forEach((item) => {
+            if (item.sentiment === "POSITIVE") scoreSum += 0;
+            else if (item.sentiment === "NEUTRAL") scoreSum += 0.5;
+            else if (item.sentiment === "NEGATIVE") scoreSum += 1;
+          });
+          averageRisk = scoreSum / newsObj.news.length;
+        }
+        return {
+          ...stock,
+          news: newsObj ? newsObj.news : [],
+          averageRisk,
+        };
+      });
+
+      setStocks(finalStocks);
+      setLoading(false);
+    });
+  }, []);
 
   const removeFavorite = (symbol) => {
     const updatedFavorites = favorites.filter(

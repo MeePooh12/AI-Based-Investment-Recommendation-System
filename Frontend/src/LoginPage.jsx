@@ -10,9 +10,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // สถานะแสดงรหัส
-  const [errorMessage, setErrorMessage] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { language, toggleLanguage } = useContext(LanguageContext);
     console.log("Language context:", { language });
@@ -43,44 +40,24 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setEmailError("");
-    setPasswordError("");
-    setErrorMessage("");
-
-    try {
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.error === "Email not found") {
-          setEmailError("อีเมลไม่ถูกต้อง");
-        } 
-        else if (data.error === "Incorrect password") {
-          setPasswordError("รหัสผ่านไม่ถูกต้อง");
-        }
-        else {
-          setErrorMessage(data.error || "เกิดข้อผิดพลาด");
-        }
-        return;
+    const defaultEmail = "admin@gmail.com";
+    const defaultPassword = "963.";
+    
+    if (email === defaultEmail && password === defaultPassword) {
+      if (remember) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
       }
 
-      // ถ้าสำเร็จ
-      if (remember) localStorage.setItem("rememberedEmail", email);
-      else localStorage.removeItem("rememberedEmail");
-
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", email.split("@")[0]);
-      localStorage.setItem("token", data.token);  // 🔥 เก็บ JWT
+
+      const username = email.split("@")[0];
+      localStorage.setItem("username", username);
 
       setIsLoading(true);
-
-    } catch (err) {
-      setErrorMessage("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+    } else {
+      alert("Email หรือ Password ไม่ถูกต้อง");
     }
   };
 
@@ -108,6 +85,10 @@ export default function LoginPage() {
   
   return (
     <div className="login-container">
+      <button className="lang-switch" onClick={toggleLanguage}>
+        {language === "en" ? "EN" : "ไทย"}
+      </button>
+
       <div className="login-left">
         <div className="logo-circle">
           <img src={logo} alt="Logo" className="logo-img" />
@@ -126,7 +107,6 @@ export default function LoginPage() {
               placeholder={t[language]?.email || t.en.email}
               required
             />
-            {emailError && <p className="error-message">{emailError}</p>}
 
             <div className="password-wrapper">
               <input
@@ -142,7 +122,6 @@ export default function LoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
               ></button>
             </div>
-            {passwordError && <p className="error-message">{passwordError}</p>}
 
             <div className="login-options">
               <label>
@@ -153,13 +132,7 @@ export default function LoginPage() {
                 />
                  {t[language]?.remember || t.en.remember}
               </label>
-              <span
-                className="forgot"
-                onClick={() => navigate("/forgot-password")}
-                style={{ cursor: "pointer", color: "#3b82f6" }}
-              >
-                {t[language]?.forgot}
-              </span>
+              <span className="forgot">{t[language]?.forgot || t.en.forgot}</span>
             </div>
 
             <button type="submit" className="btn-login">
