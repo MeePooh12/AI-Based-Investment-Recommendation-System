@@ -17,3 +17,4 @@ Thumbs.db
 # Cache / Temp
 __pycache__/
 *.log
+*.db
