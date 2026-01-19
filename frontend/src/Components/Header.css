@@ -1,0 +1,576 @@
+body.light {
+  background-color: #ffffff;
+  color: #000;
+}
+
+.top-bar{
+  display: flex;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 80px;
+  align-items: center;
+  justify-content: space-between;
+  margin: auto;
+  padding: 0px 10px;
+  border-bottom: 2px solid #d7d7d7; /* เส้นอยู่ด้านล่างของ top-bar */
+  background-color: #fff;
+  z-index: 9999;
+}
+
+.header-text {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px; /* ระยะห่างระหว่าง Welcome, Moon และ Hamburger */
+}
+
+/* Theme Dark */
+body.dark {
+  background-color: #2e2e2e;
+  color: #fff;
+}
+
+.top-bar.dark {
+  background-color: #2e2e2e;
+}
+
+.logo-container {
+  display: flex;
+  top: 10px;
+  left: 5px;
+  z-index: 1000;
+  align-items: center;
+}
+
+.site-title{
+  font-size: x-large;
+  font-weight: bold;
+  margin-left: -40px;
+}
+
+.logo {
+  height: 60px;
+  margin-right: 20px;
+  pointer-events: none;
+}
+
+.header-text {
+  top: 10px;
+  right: 5px;
+  z-index: 1000;
+  margin: 5px;
+}
+
+body.light .header-text button {
+  background-color: #f0f0f0;
+  color: #333;
+  border-color: #ccc;
+}
+
+.header-text button {
+  background-color: #fafafa; /* สีพื้นหลัง */
+  color: #333; /* สีตัวอักษร */
+  border: 1px solid #ccc; /* ขอบปุ่ม */
+  padding: 8px 15px; /* ระยะห่างภายในปุ่ม */
+  border-radius: 5px; /* ทำให้มุมปุ่มโค้งมน */
+  cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือเมื่อชี้ */
+  font-weight: bold; /* ทำให้ตัวอักษรหนาขึ้น */
+}
+
+.header-text button:hover {
+  background-color: #d0d0d0 /* สีพื้นหลังเมื่อนำเมาส์ไปชี้ */
+}
+
+/* ปรับ button / text สีให้เข้ากับ theme */
+button {
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+body.dark {
+  background-color: #2e2e2e;
+  color: #fff; /* ตัวอักษรทั่วไป */
+}
+
+body.dark .top-bar {
+  background-color: #2e2e2e;
+  color: #fff; /* ตัวอักษรใน top-bar */
+  border-bottom: 2px solid #555;
+}
+
+body.dark .header-text button {
+  background-color: #444;
+  color: #fff;
+  border-color: #555;
+}
+
+body.dark .bottom-logout{
+  background-color: #333;       /* พื้นหลังเข้มเหมือน menu */
+  color: #fff;   
+}
+
+.header-icons {
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  gap: 10px; /* Moon กับ Hamburger */
+  position: relative;
+}
+
+.mailbox-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.mail-icon-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mail-icon {
+  transition: transform 0.15s ease;
+}
+
+.mail-icon:hover {
+  transform: scale(1.1);
+}
+
+.mail-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff3b30;
+  color: white;
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* กล่อง dropdown ข้อความ */
+.mail-dropdown {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  color: #000;
+  background-color: #ffffff;
+  border: 2px solid #4fa3ff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 250px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+
+.mail-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  border-bottom: 1px solid #4fa3ff;
+  padding-bottom: 5px;
+}
+
+.mail-item {
+  font-size: 14px;
+  color: #000000;
+  margin-top: 4px;
+}
+
+.stock-news-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  transition: opacity 0.5s ease, max-height 0.5s ease;
+  overflow: hidden;
+}
+
+.stock-news-card .stock-news-header {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.stock-news-item {
+  margin-bottom: 4px;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.stock-news-item a {
+  text-decoration: none;
+}
+
+.stock-news-item a:hover {
+  text-decoration: underline;
+}
+
+.stock-news-card.fade-out {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Underline link */
+.stock-news-item a.underline {
+  text-decoration: underline;
+  color: inherit;
+}
+
+/* Mail header */
+.mail-header {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* Scrollbar */
+.mail-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.mail-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+.theme-toggle-btn{
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.2); /* ขยายขึ้น 20% เวลา hover */
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-item.active-light {
+  background: #ffffff;  /* สีเทาอ่อน */
+  color: #000;          /* ตัวอักษรดำ */
+  font-weight: 600;
+  border: 1px solid #555;
+}
+
+.dropdown-item.active-dark {
+  background: #222;     /* สีเทาเข้ม */
+  color: #fff;          /* ตัวอักษรขาว */
+  font-weight: 600;
+  border: 1px solid #555;
+}
+
+.dropdown-menu{
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.language-toggle-wrapper {
+  position: relative;
+  align-items: center;
+}
+
+.lang-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid transparent;
+  
+}
+
+.lang-toggle-btn:hover {
+  transform: scale(1.2);
+}
+
+.lang-dropdown-menu {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  min-width: 70px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 2000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  gap: 6px;
+  padding: 6px;
+}
+
+body.light .lang-dropdown-menu {
+  background-color: white;
+}
+
+body.dark .lang-dropdown-menu {
+  background-color: rgb(53, 53, 53);
+}
+
+body.light .lang-dropdown-item:hover {
+  background-color: #f0f0f0;
+  color: #111;
+}
+
+body.dark .lang-dropdown-item:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+.fear-and-greed{
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.fear-and-greed:hover{
+  transform: scale(1.2);
+}
+
+body.light .top-bar {
+  background-color: #ffffff;
+  color: #000; /* ตัวอักษรใน top-bar */
+}
+
+.hamburger-menu .hamburger-dropdown {
+  position: absolute;
+  top: 80%;
+  right: 0;
+  margin-top: 5px;
+  background-color: #fff;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+/* 🌞 ธีมสว่าง */
+body.light .hamburger-menu .hamburger-dropdown {
+  background: white;
+  border: 1px solid #ccc;
+  color: #000;
+}
+
+/* 🌙 ธีมมืด */
+body.dark .hamburger-menu .hamburger-dropdown {
+  background: #363636;     /* พื้นหลังเข้ม */
+  border: 1px solid #555;
+  color: #fff;          /* ตัวอักษรขาว */
+}
+
+body.dark .dropdown-menu {
+  background-color: #333;       /* พื้นหลังเข้ม */
+  border: 1px solid #555;       /* ขอบเข้ม */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+body.dark .dropdown-item {
+  background-color: #333;       /* พื้นหลังเข้มเหมือน menu */
+  color: #fff;                  /* ตัวอักษรสีขาว */
+}
+
+body.dark .dropdown-item:hover {
+  background-color: #444;       /* hover สีเข้มกว่า */
+}
+
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* ครอบจอสีทึบ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s forwards;
+}
+
+/* Modal Box */
+.modal {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 10px; 
+  text-align: center;
+  min-width: 300px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease forwards;
+}
+
+body.dark .modal {
+  background-color: #333;  /* พื้นหลังเข้ม */
+  color: white;            /* ข้อความสีขาว */
+}
+
+.slide-up {
+  animation: slideUp 0.3s forwards;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-buttons button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background-color: #f44336; /*  Yes */
+  color: white;
+  padding: 12px 25px;
+  font-size: 15px; 
+  border-radius: 8px;
+}
+
+.modal-buttons button:last-child {
+  background-color: #ccc; /*  No */
+   padding: 12px 25px;
+  font-size: 15px;
+  border-radius: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%); /* เริ่มจากข้างล่าง */
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0); /* กลางหน้าจอ */
+    opacity: 1;
+  }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 2px 8px;
+  border-radius: 5px; /* ✅ โค้งมน */
+  position: absolute;
+  top: 115%; /* แสดงด้านล่าง */
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  text-align: center;
+}
+
+.tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; /* วางลูกศรไว้ด้านบน tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px; /* ขนาดลูกศร */
+  border-style: solid;
+  border-color: transparent transparent var(--tooltip-bg) transparent;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* ธีมสี Tooltip */
+:root {
+  --tooltip-bg: rgba(0, 0, 0, 0.85);
+  --tooltip-text: #fff;
+}
+
+[data-theme="light"] {
+  --tooltip-bg: rgba(0, 0, 0, 0.85);
+  --tooltip-text: #fff;
+}
+
+[data-theme="dark"] {
+  --tooltip-bg: #fff;
+  --tooltip-text: #000;
+}
+
+.tooltip .tooltip-text {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip .tooltip-text.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* เว้นระยะระหว่างไอคอนกับข้อความ */
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-icon {
+  font-size: 1.2rem; /* ขนาดไอคอนปรับได้ */
+  color: inherit;    /* ใช้สีเดียวกับข้อความ */
+}
+
+.dropdown-text {
+  font-size: 1rem;
+}
