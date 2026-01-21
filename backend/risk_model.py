@@ -1,13 +1,17 @@
 from datetime import timedelta
-from sqlmodel import select
-from init_db import get_session
+from sqlalchemy import select
+from init_db import get_db   # ← ใช้ get_db ที่รองรับ PostgreSQL
 from models import Price
 import pandas as pd
 
+
+# ---------------------------------------------------------
+# ดึงข้อมูลราคาปิดย้อนหลัง N วัน
+# ---------------------------------------------------------
 def _load_close_df(session, days_back=14):
     # ดึงราคา close ล่าสุด ~14 วันจากตาราง price
     q = select(Price)
-    rows = session.exec(q).all()
+    rows = session.scalars(select(Price)).all()
     if not rows:
         return pd.DataFrame(columns=["ticker","last_updated","close"])
     data = [
@@ -17,10 +21,15 @@ def _load_close_df(session, days_back=14):
     df = pd.DataFrame(data)
     if df.empty:
         return df
-    # เอาเฉพาะย้อนหลัง N วัน (กันข้อมูลเก่า)
+
+    df["ts"] = pd.to_datetime(df["ts"], errors="coerce")
+    df = df.dropna(subset=["ts"])
     cutoff = df["ts"].max() - timedelta(days=days_back)
     return df[df["ts"] >= cutoff]
 
+# ---------------------------------------------------------
+# คำนวณระดับความเสี่ยง
+# ---------------------------------------------------------
 def _compute_risk(df):
     # df: ticker, ts, close
     if df.empty:
@@ -64,9 +73,12 @@ def _compute_risk(df):
     uni = uni.merge(ret30.rename(columns={"ticker":"Symbol"}), on="Symbol", how="left")
     return uni
 
+# ---------------------------------------------------------
+# ให้คำแนะนำหุ้นตามระดับความเสี่ยง (LOW/MEDIUM/HIGH)
+# ---------------------------------------------------------
 def recommend_by_level(level: str, limit: int = 10):
     level = level.upper()
-    with get_session() as session:
+    with get_db() as session:
         df = _load_close_df(session, days_back=14)
         uni = _compute_risk(df)
         if uni.empty:

@@ -1,29 +1,58 @@
+import os
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
+from sqlalchemy import Text, Column, String, Integer, Float, DateTime
+from init_db import Base
 
-class Stock(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    ticker: str
-    name: Optional[str] = None
-    last_updated: Optional[datetime] = None
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./database.db")
 
-class Price(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    ticker: str
-    name: str | None = None
-    last_updated: datetime | None = None
-    open: Optional[float] = None
-    high: Optional[float] = None
-    low: Optional[float] = None
-    close: Optional[float] = None
-    volume: Optional[int] = None
+def utcnow():
+    # PostgreSQL รองรับ timezone-aware → ใช้ UTC
+    return datetime.now(timezone.utc)
 
-class News(SQLModel, table=True):
+# -------------------------------------------------------
+# User Table
+# -------------------------------------------------------
+class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    ticker: str
-    title: str
-    summary: Optional[str]
-    url: Optional[str]
-    published_at: Optional[datetime]
-    sentiment: Optional[float]
+    email: str = Field(index=True)
+    hashed_password: str
+    created_at: datetime = Field(default_factory=utcnow)
+
+# -------------------------------------------------------
+# Stock Table
+# -------------------------------------------------------
+class Stock(Base):
+    __tablename__ = "stocks"
+    id = Column(Integer, primary_key=True)
+    ticker = Column(String, unique=True, nullable=False)
+    name = Column(String)
+    last_updated = Column(DateTime)
+
+# -------------------------------------------------------
+# Price Table
+# -------------------------------------------------------
+class Price(Base):
+    __tablename__ = "prices"
+    id = Column(Integer, primary_key=True)
+    ticker = Column(String, nullable=False)
+    name = Column(String)
+    last_updated = Column(DateTime)
+    open = Column(Float)
+    high = Column(Float)
+    low = Column(Float)
+    close = Column(Float)
+    volume = Column(Integer)
+# -------------------------------------------------------
+# News Table
+# -------------------------------------------------------
+class News(Base):
+    __tablename__ = "news"
+    id = Column(Integer, primary_key=True)
+    ticker = Column(String)
+    title = Column(String)
+    summary = Column(String)
+    url = Column(String)
+    published_at = Column(DateTime)
+    sentiment = Column(Float)

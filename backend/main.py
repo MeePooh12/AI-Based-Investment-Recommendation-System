@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from requests.adapters import HTTPAdapter, Retry
+from fetcher_model import fetch_and_store
 from transformers import pipeline 
 
 # =========================
@@ -15,7 +16,7 @@ NEWSAPI_KEY           = "a04991aac4b24a49960537762706d236"
 MARKETAUX_API_KEY     = "aMTmgO6NFYTWlmpyq0hNridETBKSf2vdsZoqFawO"
 
 CACHE_DURATION = timedelta(minutes=10)
-TICKERS = ["NVDA","MSFT","AMZN","UNH","AMD","GOOGL","MU","TSM","NVO","MRK","V"]
+TICKERS = ["NVDA","MSFT","AMZN","UNH","AMD","GOOGL","MU","TSM","NVO","META","BRK-A"]
 cache_lock = threading.Lock()
 cache: Dict[str, Dict[str, Any]] = {}
 
@@ -47,15 +48,11 @@ except Exception:
 app = FastAPI(title="AI Stock Sentiment API", version="3.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "*"],  # ปรับ origin ตามจริง
+    allow_origins=["*"],  # ปรับ origin ตามจริง
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.get("/")
-def root():
-    return {"message": "AI Investment Backend is running!"}
 
 # =========================
 # Sentiment Model (FinBERT)
@@ -199,7 +196,7 @@ def get_marketaux_news(symbol: str, limit=5, days_back=7):
         print(f"MarketAux API error: {e}")
         return []
 
-def get_newsapi_news_batch(symbols: List[str], limit_per_symbol=5, days_back=7):
+def get_newsapi_news_batch(symbols: List[str], limit_per_symbol=5, days_back=14):
     out = []
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=days_back)
@@ -281,6 +278,9 @@ def compute_recommendation(symbol: str,
     - trend: ใช้ EMA10/EMA20 จากราคาช่วง 90 วัน
     - target_diff_expected = a*sentiment + b*trend (bounded)
     - confidence: ขึ้นกับจำนวนข่าว + ความแรงของสัญญาณ
+    - รองรับกรณีไม่มีไฟล์ news_clean.csv (fallback ไปดึงข่าวสด + FinBERT)
+    - เพิ่มการตรวจไฟล์ก่อนอ่าน
+    - โครงสร้างเดิมไม่เปลี่ยน
     """
     sym = symbol.upper()
 
@@ -316,20 +316,24 @@ def compute_recommendation(symbol: str,
 
     # fallback → live news + FinBERT
     if news_count == 0:
-        live = get_newsapi_news_batch([sym], limit_per_symbol=10, days_back=window_days)[0]["news"]
-        if not live:
-            live = get_marketaux_news(sym, limit=10, days_back=window_days) or get_alpha_news(sym) or get_yahoo_news_rss(sym, limit=10)
-        if live:
-            labels = [x.get("sentiment","Neutral") for x in live]
-            # FinBERT label → score
-            def score(lbl:str) -> float:
-                s = (lbl or "Neutral").lower()
-                if "positive" in s: return 1.0
-                if "negative" in s: return -1.0
-                return 0.0
-            scores = [score(l) for l in labels]
-            avg_sent = float(pd.Series(scores).mean())
-            news_count = len(live)
+        try:
+            live = get_newsapi_news_batch([sym], limit_per_symbol=10, days_back=window_days)[0]["news"]
+            if not live:
+                live = get_marketaux_news(sym, limit=10, days_back=window_days) \
+                    or get_alpha_news(sym) \
+                    or get_yahoo_news_rss(sym, limit=10)
+            if live:
+                def score(lbl: str) -> float:
+                    s = (lbl or "Neutral").lower()
+                    if "positive" in s: return 1.0
+                    if "negative" in s: return -1.0
+                    return 0.0
+                labels = [x.get("sentiment", "Neutral") for x in live]
+                scores = [score(l) for l in labels]
+                avg_sent = float(pd.Series(scores).mean())
+                news_count = len(live)
+        except Exception as e:
+            print(f"⚠️ live news fallback error: {e}")
 
     # -------- trend: EMA10 vs EMA20 จากราคา 90 วัน --------
     try:
@@ -401,20 +405,20 @@ def compute_recommendation(symbol: str,
 def background_fetch(interval=600):
     while True:
         log.info("Background: refreshing cache...")
-        for sym in TICKERS:
+
+        with cache_lock:
+            symbols_to_refresh = list(cache.keys())  # ดึงหุ้นที่เคยค้น
+
+        for sym in symbols_to_refresh:
             try:
                 data = get_alpha_news(sym)
                 if data:
                     with cache_lock:
-                        cache[sym] = {
-                            "time": datetime.now(),
-                            "data": {
-                                "symbol": sym, "name": sym, "price": 0,
-                                "history": [], "news": data
-                            }
-                        }
+                        cache[sym]["time"] = datetime.now()
+                        cache[sym]["data"]["news"] = data
             except Exception as e:
                 log.warning(f"Cache update failed for {sym}: {e}")
+
         time.sleep(interval)
 
 threading.Thread(target=background_fetch, daemon=True).start()
@@ -438,39 +442,42 @@ def news_endpoint(symbols: str, days_back: int = 7):
 @app.get("/stock/{symbol}")
 def stock_endpoint(symbol: str):
     symbol = symbol.upper()
-    if symbol not in TICKERS:
-        raise HTTPException(status_code=400, detail="Stock not supported")
 
-    # cache
-    if symbol in cache and datetime.now() - cache[symbol]["time"] < CACHE_DURATION:
-        return cache[symbol]["data"]
+    # =============== CACHE CHECK ===============
+    with cache_lock:
+        if symbol in cache:
+            item = cache[symbol]
+            if datetime.now() - item["time"] < CACHE_DURATION:
+                return item["data"]
 
+    # =============== LIVE FETCH ===============
     try:
-        stock_data = get_stock_data(symbol)
-        news_data = get_newsapi_news_batch([symbol], limit_per_symbol=20)[0]["news"]
-        if not news_data:
-            news_data = get_alpha_news(symbol) or get_yahoo_news_rss(symbol)
-        if not news_data:
-            news_data = [{
-                "title": "ไม่มีข่าวล่าสุด",
-                "link": "",
-                "date": "",
-                "sentiment": "Neutral",
-                "provider": "System",
-                "image": ""
-            }]
+        stock = get_stock_data(symbol)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    result = {
+    # เพิ่มข่าวแบบสดทันที (NewsAPI + fallback)
+    try:
+        news_batch = get_newsapi_news_batch([symbol], 10, 7)
+        news = news_batch[0]["news"]
+    except Exception:
+        news = get_marketaux_news(symbol, limit=10) \
+            or get_alpha_news(symbol) \
+            or get_yahoo_news_rss(symbol)
+
+    data = {
         "symbol": symbol,
-        "name": stock_data["name"],
-        "price": stock_data["price"],
-        "history": stock_data["history"],
-        "news": news_data
+        "name": stock["name"],
+        "price": stock["price"],
+        "history": stock["history"],
+        "news": news,
     }
-    cache[symbol] = {"time": datetime.now(), "data": result}
-    return result
+
+    # =============== CACHE SAVE ===============
+    with cache_lock:
+        cache[symbol] = {"time": datetime.now(), "data": data}
+
+    return data
 
 # ✅ แนะนำหุ้นตามระดับความเสี่ยง (LOW / MEDIUM / HIGH)
 @app.get("/risk/recommend")
@@ -500,5 +507,5 @@ def recommend_endpoint(
 
 # Run local (optional)
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    fetch_and_store(TICKERS)
+    print("Data fetched, cleaned, and stored successfully.")
